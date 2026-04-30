@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div class="vuln-banner">
+        <strong>⚠ VERSIUNE VULNERABILA (v1)</strong> — Aceasta instanta contine
+        vulnerabilitati intentionate in scop educational. Nu folositi in productie.
+    </div>
+
+    <div class="info-card">
+        <h3>Informatii cont</h3>
+        <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ email }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Rol:</span>
+            <span class="value">{{ role }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Cookie demo:</span>
+            <!--
+                VULNERABILITATE #5: Cookie-ul suplimentar "user_email" este setat
+                fara HttpOnly/Secure/SameSite si poate fi citit din JavaScript.
+                Autentificarea reala se bazeaza pe sesiunea Flask (cookie "session"),
+                dar aceasta este semnata cu un secret_key slab: "secret123".
+                Incercati in consola: document.cookie
+            -->
+            <span class="value" style="color:#ff6b6b;">user_email: httponly=False, secure=False | secret_key: "secret123"</span>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h3>Vulnerabilitati active in aceasta versiune</h3>
+        <ul class="vuln-list">
+            <li>Parole stocate cu MD5 fara salt</li>
+            <li>Parole extrem de slabe acceptate: fara validare lungime/complexitate (ex: "1", "a")</li>
+            <li>Login fara rate limiting sau lockout</li>
+            <li>User enumeration prin mesaje de eroare diferite</li>
+            <li>Cookie user_email fara HttpOnly / Secure / SameSite</li>
+            <li>Token de resetare = timestamp Unix (predictibil)</li>
+            <li>Token de resetare reutilizabil (nu se sterge dupa folosire)</li>
+            <li>Token de resetare fara expirare</li>
+        </ul>
+    </div>
+
+    {% if logs %}
+    <div class="info-card">
+        <h3>Jurnal de activitate (audit log)</h3>
+        <table>
+            <tr>
+                <th>Actiune</th>
+                <th>Resursa</th>
+                <th>IP</th>
+                <th>Timestamp</th>
+            </tr>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log['action'] }}</td>
+                <td>{{ log['resource'] }}</td>
+                <td>{{ log['ip_address'] }}</td>
+                <td>{{ log['timestamp'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

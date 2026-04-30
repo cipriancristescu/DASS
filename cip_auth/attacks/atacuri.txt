@@ -1,0 +1,27 @@
+T1
+curl.exe -s -o nul -w "%{http_code}" -X POST "http://127.0.0.1:5000/register" -d "email=weak@test.com&password=1"
+T2
+python -c "import sqlite3; conn=sqlite3.connect('cip_auth.db'); print(conn.execute('SELECT email, password FROM users').fetchall()); conn.close()"
+python -c "import hashlib; print(hashlib.md5('1'.encode()).hexdigest())"
+
+T3
+python attacks/brute_force.py
+
+T4
+curl.exe -s -X POST "http://127.0.0.1:5000/login" -d "email=nu.exista@test.com&password=test" | findstr "Utilizatorul"
+curl.exe -s -X POST "http://127.0.0.1:5000/login" -d "email=weak@test.com&password=gresita" | findstr "Parola"
+
+T1
+curl.exe -s -X POST "http://127.0.0.1:5001/register" -d "email=fixed@test.com&password=1" | findstr "Parola"
+curl.exe -s -o nul -w "%{http_code}" -X POST "http://127.0.0.1:5001/register" -d "email=fixed@test.com&password=Parola12"
+
+T2
+python -c "import sqlite3; conn=sqlite3.connect('cip_auth_fixed.db'); print(conn.execute('SELECT email, password FROM users').fetchall()); conn.close()"
+
+T3
+python attacks/brute_force_fixed.py
+
+T4
+curl.exe -s -X POST "http://127.0.0.1:5001/login" -d "email=nu.exista@test.com&password=test" | findstr "Credentiale"
+curl.exe -s -X POST "http://127.0.0.1:5001/login" -d "email=fixed@test.com&password=gresita" | findstr "Credentiale"
+

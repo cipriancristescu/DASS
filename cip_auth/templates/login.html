@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>Autentificare</h2>
+
+        {% if error %}
+        <div class="alert alert-error">
+            <!--
+                VULNERABILITATE #4: User Enumeration.
+                Mesajul arata exact daca userul exista sau parola e gresita.
+                Un atacator poate folosi aceasta diferenta pentru a afla
+                ce emailuri sunt inregistrate.
+            -->
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!--
+            VULNERABILITATE #3: Fara rate limiting.
+            Formularul poate fi trimis de mii de ori pe secunda fara nicio blocare.
+            Un atacator poate folosi un tool (hydra, python script) pentru brute force.
+        -->
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="you@company.com" required>
+            </div>
+            <div class="form-group">
+                <label>Parola</label>
+                <input type="password" name="password" placeholder="parola" required>
+            </div>
+            <button type="submit" class="btn">Autentifica-te</button>
+        </form>
+
+        <div class="links">
+            <a href="{{ url_for('forgot_password') }}">Ai uitat parola?</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('register') }}">Creeaza cont</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

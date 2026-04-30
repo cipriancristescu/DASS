@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div class="secure-banner">
+        <strong>✓ VERSIUNE SECURIZATA (v2)</strong> — Vulnerabilitatile v1 au fost remediate.
+    </div>
+
+    <div class="info-card">
+        <h3>Informatii cont</h3>
+        <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ email }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Rol:</span>
+            <span class="value">{{ role }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Sesiune:</span>
+            <span class="value" style="color:#5ce08e;">HttpOnly=True &bull; SameSite=Strict &bull; Secure=True (productie/HTTPS) &bull; Expira in 1h</span>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h3>Fix-uri active in aceasta versiune</h3>
+        <ul class="fix-list">
+            <li>Parole: minim 8 caractere + litera mare + cifra (bcrypt rounds=12)</li>
+            <li>Rate limiting: max 5 incercari / 60s per IP</li>
+            <li>Mesaj generic la login: "Credentiale invalide"</li>
+            <li>Cookie session: HttpOnly=True, SameSite=Strict, Secure=True (in productie cu HTTPS)</li>
+            <li>Secret key: generat aleatoriu (nu hardcodat)</li>
+            <li>Token reset: secrets.token_urlsafe(32), expira 15 min, one-time use</li>
+        </ul>
+    </div>
+
+    {% if logs %}
+    <div class="info-card">
+        <h3>Jurnal de activitate (audit log)</h3>
+        <table>
+            <tr>
+                <th>Actiune</th>
+                <th>Resursa</th>
+                <th>IP</th>
+                <th>Timestamp</th>
+            </tr>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log['action'] }}</td>
+                <td>{{ log['resource'] }}</td>
+                <td>{{ log['ip_address'] }}</td>
+                <td>{{ log['timestamp'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
